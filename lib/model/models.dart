@@ -1,19 +1,19 @@
-/// จำนวนเตียงนวดของร้าน (ใช้ร่วมกันทุกหมอ) แก้ตัวเลขนี้ได้
+// จำนวนเตียงนวดของร้าน
 const kBedCount = 3;
- 
-/// ตัวเลือกระยะเวลาของโปรแกรม พร้อมราคา
+
+// ระยะเวลาของโปรแกรม พร้อมราคา
 class DurationOption {
   final int minutes, price;
   const DurationOption(this.minutes, this.price);
 }
- 
+
 class Program {
   final String id, name;
   final List<DurationOption> options;
   const Program(this.id, this.name, this.options);
 }
- 
-/// โปรแกรมนวด + ระยะเวลาที่เลือกได้ (ราคาตามป้ายราคาค่าบริการของร้าน)
+
+// โปรแกรมนวด ระยะเวลาที่เลือก ราคาตามป้ายราคาค่าบริการของร้าน
 const programs = [
   Program('p1', 'นวดไทย', [
     DurationOption(60, 300),
@@ -53,35 +53,35 @@ const programs = [
   ]),
 ];
 
-/// หมอ = ผู้ดูแลระบบ แต่ละคนมีไอดี/รหัสผ่านและข้อมูลของตัวเองตายตัว
-/// (แก้ชื่อ ไอดี รหัส ข้อมูลได้ที่รายการนี้)
+// หมอเป็นผู้ดูแล แต่ละคนมีไอดี รหัสผ่านและข้อมูลของตัวเองแบบตายตัว
+// แก้ชื่อ ไอดี รหัส ข้อมูล
 class Doctor {
   final String id, password, name, specialty, phone;
   const Doctor(this.id, this.password, this.name, this.specialty, this.phone);
 }
- 
+
 const doctors = [
   Doctor('mali', 'mali1234', 'หมอมะลิ', 'นวดไทย', '081-111-1111'),
   Doctor('somchai', 'somchai1234', 'หมอสมชาย', 'นวดน้ำมันอโรมา', '082-222-2222'),
   Doctor('namfon', 'namfon1234', 'หมอน้ำฝน', 'นวดเท้า / นวดคอ บ่า ไหล่',
       '083-333-3333'),
 ];
- 
-/// นัดหมาย: หมอเป็นคนจองให้คนไข้ (ใช้เตียง 1 เตียงตลอดช่วงเวลานัด)
+
+// หมอเป็นคนจองให้คนไข้ ใช้เตียง 1 เตียงตลอดช่วงเวลานัด
 class Booking {
   final Program program;
   final int minutes, price; // ระยะเวลาและราคาที่เลือก
   final Doctor doctor;
   final DateTime start;
   final String patientId, patientName, patientPhone;
- 
+
   Booking(this.program, this.minutes, this.price, this.doctor, this.start,
       {required this.patientId,
       required this.patientName,
       required this.patientPhone});
- 
+
   DateTime get end => start.add(Duration(minutes: minutes));
- 
+
   Map<String, dynamic> toJson() => {
         'program': program.id,
         'minutes': minutes,
@@ -92,8 +92,7 @@ class Booking {
         'name': patientName,
         'phone': patientPhone,
       };
- 
-  /// คืน null ถ้าโปรแกรม/หมอในข้อมูลที่เก็บไว้ไม่มีแล้ว
+
   static Booking? fromJson(Map<String, dynamic> j) {
     Program? p;
     for (final x in programs) {

@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
- 
 import '../auth/auth_service.dart';
 import 'admin_patient_detail_page.dart';
- 
-/// รายชื่อคนไข้ทั้งหมดสำหรับหมอ: ค้นหาด้วยเลขบัตร ชื่อ หรือเบอร์โทร
-/// กดที่ชื่อเพื่อดูข้อมูลและประวัตินัดของคนไข้
+
+// รายชื่อคนไข้ทั้งหมดสำหรับหมอ ค้นหาด้วยเลขบัตร ชื่อ หรือเบอร์โทร
+// กดที่ชื่อเพื่อดูข้อมูลและประวัตินัดของคนไข้
 class AdminPatientsPage extends StatefulWidget {
   const AdminPatientsPage({super.key});
   @override
   State<AdminPatientsPage> createState() => _AdminPatientsPageState();
 }
- 
+
 class _AdminPatientsPageState extends State<AdminPatientsPage> {
   String _query = '';
- 
+
   bool _matches(PatientRef p, String q) {
     final s = q.trim().toLowerCase();
     if (s.isEmpty) return true;
@@ -21,7 +20,7 @@ class _AdminPatientsPageState extends State<AdminPatientsPage> {
         p.name.toLowerCase().contains(s) ||
         p.phone.contains(s);
   }
- 
+
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(

@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
- 
 import '../auth/auth_service.dart';
 import '../model/format.dart';
- 
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
- 
+
 class _ProfilePageState extends State<ProfilePage> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _first, _last, _year, _phone, _note;
- 
+
   @override
   void initState() {
     super.initState();
@@ -25,7 +24,7 @@ class _ProfilePageState extends State<ProfilePage> {
     _phone = TextEditingController(text: a?.phone ?? '');
     _note = TextEditingController(text: a?.note ?? '');
   }
- 
+
   @override
   void dispose() {
     _first.dispose();
@@ -35,7 +34,7 @@ class _ProfilePageState extends State<ProfilePage> {
     _note.dispose();
     super.dispose();
   }
- 
+
   Future<void> _confirmLogout() async {
     final ok = await showDialog<bool>(
       context: context,
@@ -54,7 +53,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
     if (ok == true) authService.logout();
   }
- 
+
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
     await authService.updateProfile(_first.text, _last.text,
@@ -63,7 +62,7 @@ class _ProfilePageState extends State<ProfilePage> {
     ScaffoldMessenger.of(context)
         .showSnackBar(const SnackBar(content: Text('บันทึกข้อมูลแล้ว')));
   }
- 
+
   @override
   Widget build(BuildContext context) {
     final idCard = authService.currentUser ?? '';
@@ -77,7 +76,7 @@ class _ProfilePageState extends State<ProfilePage> {
       body: Form(
         key: _formKey,
         child: ListView(padding: const EdgeInsets.all(16), children: [
-          // เลขบัตรประชาชน: ดูได้อย่างเดียว (ใช้เป็นไอดีล็อกอิน)
+          // เลขบัตรประชาชน ใช้ล็อกอิน
           TextFormField(
             initialValue: idCard,
             readOnly: true,

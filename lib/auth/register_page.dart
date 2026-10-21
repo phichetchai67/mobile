@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
- 
 import '../model/format.dart';
 import 'auth_service.dart';
- 
-/// หน้าสมัครสมาชิก: ชื่อ นามสกุล ปีเกิด เบอร์โทร เลขบัตรประชาชน ตั้งรหัสผ่าน
-/// สมัครสำเร็จ -> กลับหน้าล็อกอิน (ส่งเลขบัตรกลับไปเติมให้)
+
+// หน้าสมัครสมาชิก ชื่อ นามสกุล ปีเกิด เบอร์โทร เลขบัตรประชาชน ตั้งรหัสผ่าน
+// สมัครสำเร็จ กลับหน้าล็อกอิน ส่งเลขบัตรกลับไปเติมให้
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
   @override
   State<RegisterPage> createState() => _RegisterPageState();
 }
- 
+
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
   final _first = TextEditingController();
@@ -23,7 +22,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final _confirm = TextEditingController();
   bool _loading = false, _hide = true;
   String? _error;
- 
+
   @override
   void dispose() {
     for (final c in [_first, _last, _year, _phone, _idCard, _pass, _confirm]) {
@@ -31,7 +30,7 @@ class _RegisterPageState extends State<RegisterPage> {
     }
     super.dispose();
   }
- 
+
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() {
@@ -56,7 +55,7 @@ class _RegisterPageState extends State<RegisterPage> {
     }
     Navigator.pop(context, _idCard.text.trim());
   }
- 
+
   Widget _field(
     TextEditingController c,
     String label, {
@@ -88,7 +87,7 @@ class _RegisterPageState extends State<RegisterPage> {
           validator: validator,
         ),
       );
- 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

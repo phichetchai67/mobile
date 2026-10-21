@@ -1,20 +1,18 @@
 
 import 'dart:convert';
- 
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
- 
 import '../auth/auth_service.dart';
 import '../model/models.dart';
- 
-/// เก็บนัดหมาย เช็กว่าหมอ/คนไข้ว่างไหม และเตียงนวดพอไหม (กันนัดทับกันจนเตียงเกิน)
-/// ข้อมูลถูกเก็บในเครื่อง (shared_preferences)
+
+// เก็บนัดหมาย เช็กว่าหมอ คนไข้ว่างไหม และเตียงนวดพอไหม กันนัดทับกันจนเตียงเกิน
+// ข้อมูลถูกเก็บในเครื่อง shared_preferences
 class BookingService extends ChangeNotifier {
   static const _key = 'bookings_v2';
- 
+
   final List<Booking> bookings = [];
   SharedPreferences? _prefs;
- 
+
   Future<void> load() async {
     _prefs = await SharedPreferences.getInstance();
     final raw = _prefs!.getString(_key);
@@ -25,41 +23,41 @@ class BookingService extends ChangeNotifier {
         if (b != null) bookings.add(b);
       }
     } catch (_) {
-      bookings.clear(); // ข้อมูลเสีย: เริ่มใหม่
+      bookings.clear(); // ข้อมูลเสีย เริ่มใหม่
     }
   }
- 
+
   Future<void> _save() async {
     await _prefs?.setString(
         _key, jsonEncode([for (final b in bookings) b.toJson()]));
   }
- 
+
   List<Booking> forDoctor(String doctorId) => [
         for (final b in bookings)
           if (b.doctor.id == doctorId) b
       ]..sort((a, b) => a.start.compareTo(b.start));
- 
+
   List<Booking> forPatient(String id) => [
         for (final b in bookings)
           if (b.patientId == id) b
       ]..sort((a, b) => a.start.compareTo(b.start));
- 
+
   bool _overlap(Booking b, DateTime start, DateTime end) =>
       start.isBefore(b.end) && b.start.isBefore(end);
- 
-  /// หมอว่างในช่วง [start, start+minutes) ไหม
+
+  // หมอว่างในช่วง [start, start+minutes) ไหม
   bool isDoctorFree(String doctorId, DateTime start, int minutes) {
     final end = start.add(Duration(minutes: minutes));
     return !bookings
         .any((b) => b.doctor.id == doctorId && _overlap(b, start, end));
   }
- 
+
   bool isPatientFree(String id, DateTime start, int minutes) {
     final end = start.add(Duration(minutes: minutes));
     return !bookings.any((b) => b.patientId == id && _overlap(b, start, end));
   }
- 
-  /// จำนวนเตียงที่ถูกใช้พร้อมกันมากที่สุดในช่วง [start, end)
+
+  // จำนวนเตียงที่ถูกใช้พร้อมกันมากที่สุดในช่วง [start, end)
   int _peakBedsInUse(DateTime start, DateTime end) {
     final overlapping = [
       for (final b in bookings)
@@ -79,15 +77,13 @@ class BookingService extends ChangeNotifier {
     }
     return peak;
   }
- 
-  /// จำนวนเตียงที่ยังว่างตลอดช่วง [start, start+minutes)
+
   int bedsFree(DateTime start, int minutes) {
     final free =
         kBedCount - _peakBedsInUse(start, start.add(Duration(minutes: minutes)));
     return free < 0 ? 0 : free;
   }
- 
-  /// หมอจองนัดให้คนไข้ คืน booking ถ้าสำเร็จ หรือข้อความ error
+
   ({Booking? booking, String? error}) book({
     required Program program,
     required int minutes,
@@ -121,8 +117,8 @@ class BookingService extends ChangeNotifier {
     notifyListeners();
     return (booking: b, error: null);
   }
- 
-  /// ยกเลิกนัด (เวลาและเตียงจะว่างให้จองใหม่ได้)
+
+  // ยกเลิกนัด เวลาและเตียงจะว่างให้จองใหม่ได้
   void cancel(Booking b) {
     if (bookings.remove(b)) {
       _save();
@@ -130,5 +126,5 @@ class BookingService extends ChangeNotifier {
     }
   }
 }
- 
+
 final bookingService = BookingService();

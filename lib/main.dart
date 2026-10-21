@@ -4,19 +4,18 @@ import 'booking/booking_service.dart';
 import 'patient/profile_page.dart';
 import 'auth/auth_service.dart';
 import 'auth/login_page.dart';
-
 import 'admin/admin_home_page.dart';
- 
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await authService.load(); // อ่านบัญชีที่เคยสมัครไว้ก่อนเริ่มแอป
-  await bookingService.load(); // อ่านนัดหมายที่เคยจองไว้
+  await bookingService.load(); // อ่านนัดที่เคยจองไว้
   runApp(const MassageApp());
 }
- 
+
 class MassageApp extends StatelessWidget {
   const MassageApp({super.key});
- 
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -34,18 +33,18 @@ class MassageApp extends StatelessWidget {
     );
   }
 }
- 
-/// หน้าหลักของคนไข้: ดูนัดหมาย + ข้อมูลของฉัน (จองเองไม่ได้ หมอเป็นคนจองให้)
+
+// หน้าหลักของคนไข้ ดูนัดหมายกับข้อมูลของตัวเอง
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
   @override
   State<HomePage> createState() => _HomePageState();
 }
- 
+
 class _HomePageState extends State<HomePage> {
   int _index = 0;
   final _pages = const [MyBookingsPage(), ProfilePage()];
- 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

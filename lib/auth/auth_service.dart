@@ -3,10 +3,9 @@ import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
- 
 import '../model/format.dart';
 import '../model/models.dart';
- 
+
 class Account {
   final String firstName, lastName, phone, note, disease, salt, passwordHash;
   final int birthYear; // พ.ศ.
@@ -20,7 +19,7 @@ class Account {
     required this.salt,
     required this.passwordHash,
   });
- 
+
   Account copyWith({
     String? firstName,
     String? lastName,
@@ -39,7 +38,7 @@ class Account {
         salt: salt,
         passwordHash: passwordHash,
       );
- 
+
   Map<String, dynamic> toJson() => {
         'firstName': firstName,
         'lastName': lastName,
@@ -50,7 +49,7 @@ class Account {
         'salt': salt,
         'hash': passwordHash,
       };
- 
+
   factory Account.fromJson(Map<String, dynamic> j) => Account(
         firstName: (j['firstName'] as String?) ?? '',
         lastName: (j['lastName'] as String?) ?? '',
@@ -62,8 +61,8 @@ class Account {
         passwordHash: j['hash'] as String,
       );
 }
- 
-/// ข้อมูลคนไข้ที่หมอเลือกตอนจองนัด (ไม่เปิดเผยเลขบัตรในรายการ)
+
+// ข้อมูลคนไข้ที่หมอเลือกตอนจองนัด
 class PatientRef {
   final String id, name, phone, disease;
   final int birthYear;
@@ -71,21 +70,21 @@ class PatientRef {
       [this.disease = '']);
   int get age => ageFromBirthYear(birthYear);
 }
- 
-/// สมัคร / เข้าสู่ระบบ (คนไข้ด้วยเลขบัตรประชาชน + หมอด้วยไอดี) / ออกจากระบบ
-/// บัญชีคนไข้และสถานะล็อกอินถูกเก็บในเครื่อง (shared_preferences)
-/// รหัสผ่านไม่ถูกเก็บตรงๆ เก็บเป็นค่า hash (SHA-256 + salt)
-/// บัญชีหมอกำหนดตายตัวใน models.dart (รายการ doctors)
+
+// สมัคร เข้าสู่ระบบคนไข้ด้วยเลขบัตรประชาชน หมอด้วยไอดี
+// บัญชีคนไข้และสถานะล็อกอินถูกเก็บในเครื่อง (shared_preferences)
+// รหัสผ่านไม่ถูกเก็บตรงๆ เก็บเป็นค่า hash (SHA-256 + salt)
+// บัญชีหมอกำหนดตายตัวใน models.dart (รายการ doctors)
 class AuthService extends ChangeNotifier {
   static const _usersKey = 'auth_users_v2';
   static const _sessionKey = 'auth_current_user_v2';
   static const _doctorKey = 'auth_doctor_id';
- 
-  final Map<String, Account> _users = {}; // เลขบัตรประชาชน -> account
+
+  final Map<String, Account> _users = {}; // เลขบัตรประชาชน account
   String? currentUser; // เลขบัตรประชาชนของคนไข้ที่ล็อกอิน
-  Doctor? currentDoctor; // หมอที่ล็อกอิน (ถ้ามี = โหมดผู้ดูแล)
+  Doctor? currentDoctor; // หมอที่ล็อกอิน
   SharedPreferences? _prefs;
- 
+
   Future<void> load() async {
     _prefs = await SharedPreferences.getInstance();
     final raw = _prefs!.getString(_usersKey);
@@ -96,7 +95,7 @@ class AuthService extends ChangeNotifier {
           _users[id] = Account.fromJson(v as Map<String, dynamic>);
         });
       } catch (_) {
-        _users.clear(); // ข้อมูลเสีย: เริ่มใหม่
+        _users.clear(); // ข้อมูลเสีย เริ่มใหม่
       }
     }
     final doctorId = _prefs!.getString(_doctorKey);
@@ -110,18 +109,18 @@ class AuthService extends ChangeNotifier {
       currentUser = session;
     }
   }
- 
+
   bool get isAdmin => currentDoctor != null;
   bool get isLoggedIn => isAdmin || currentUser != null;
- 
+
   Account? get currentAccount => _users[currentUser];
- 
+
   String get displayName {
     final a = currentAccount;
     return a == null ? '' : '${a.firstName} ${a.lastName}';
   }
- 
-  /// คนไข้ทั้งหมดในระบบ (ให้หมอเลือกตอนจองนัด)
+
+  // คนไข้ทั้งหมดในระบบ ให้หมอเลือกตอนจองนัด
   List<PatientRef> get patients {
     final list = <PatientRef>[
       for (final e in _users.entries)
@@ -131,8 +130,8 @@ class AuthService extends ChangeNotifier {
     list.sort((a, b) => a.name.compareTo(b.name));
     return list;
   }
- 
-  // ---------------- หมอ / ผู้ดูแลระบบ ----------------
+
+  // หมอหรือผู้ดูแลระบบ
   Future<String?> loginAdmin(String id, String password) async {
     await Future.delayed(const Duration(milliseconds: 600));
     Doctor? found;
@@ -149,9 +148,9 @@ class AuthService extends ChangeNotifier {
     notifyListeners();
     return null;
   }
- 
-  // ---------------- คนไข้ ----------------
-  /// สมัครสมาชิก (ยังไม่ล็อกอินให้ ต้องกลับไปล็อกอินด้วยเลขบัตร + รหัสผ่าน)
+
+  // คนไข้
+  // สมัครสมาชิก ยังไม่ล็อกอินให้ ต้องกลับไปล็อกอินด้วยเลขบัตร รหัสผ่าน
   Future<String?> register({
     required String idCard,
     required String firstName,
@@ -173,7 +172,7 @@ class AuthService extends ChangeNotifier {
     }
     if (password.length < 6) return 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร';
     if (_users.containsKey(id)) return 'เลขบัตรประชาชนนี้สมัครสมาชิกแล้ว';
- 
+
     final salt = _newSalt();
     _users[id] = Account(
       firstName: firstName.trim(),
@@ -186,7 +185,7 @@ class AuthService extends ChangeNotifier {
     await _saveUsers();
     return null;
   }
- 
+
   Future<String?> login(String idCard, String password) async {
     await Future.delayed(const Duration(milliseconds: 600));
     final id = idCard.trim();
@@ -204,8 +203,8 @@ class AuthService extends ChangeNotifier {
     notifyListeners();
     return null;
   }
- 
-  /// แก้ไขข้อมูลส่วนตัวจากหน้า "ข้อมูลของฉัน" (เลขบัตรแก้ไม่ได้)
+
+  // แก้ไขข้อมูลส่วนตัวจากหน้า "ข้อมูลของฉัน" เลขบัตรแก้ไม่ได้
   Future<void> updateProfile(String first, String last, int birthYear,
       String phone, String note) async {
     final a = currentAccount;
@@ -220,11 +219,11 @@ class AuthService extends ChangeNotifier {
     await _saveUsers();
     notifyListeners();
   }
- 
-  /// ข้อมูลบัญชีคนไข้ตามเลขบัตร (ให้หมอเปิดดูในหน้าข้อมูลคนไข้)
+
+  // ข้อมูลบัญชีคนไข้ตามเลขบัตร ให้หมอเปิดดูในหน้าข้อมูลคนไข้
   Account? accountOf(String idCard) => _users[idCard];
 
-  /// หมอแก้ชื่อโรคของคนไข้
+  // หมอแก้ชื่อโรคของคนไข้
   Future<void> updateDisease(String idCard, String disease) async {
     final a = _users[idCard];
     if (a == null) return;
@@ -240,19 +239,19 @@ class AuthService extends ChangeNotifier {
     _prefs?.remove(_doctorKey);
     notifyListeners();
   }
- 
+
   Future<void> _saveUsers() async {
     final map = _users.map((k, v) => MapEntry(k, v.toJson()));
     await _prefs?.setString(_usersKey, jsonEncode(map));
   }
- 
+
   String _newSalt() {
     final r = Random.secure();
     return base64UrlEncode(List<int>.generate(16, (_) => r.nextInt(256)));
   }
- 
+
   String _hash(String salt, String password) =>
       sha256.convert(utf8.encode('$salt:$password')).toString();
 }
- 
+
 final authService = AuthService();

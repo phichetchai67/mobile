@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
- 
 import '../auth/auth_service.dart';
 import '../booking/booking_service.dart';
 import '../model/format.dart';
 import '../model/models.dart';
 import 'admin_booking_page.dart';
 import 'admin_patients_page.dart';
- 
-/// หน้าหลักของหมอ (ผู้ดูแล): ข้อมูลหมอ + นัดของหมอ + จองนัดให้คนไข้
+
+// หน้าหลักของหมอหรือผู้ดูแล: ข้อมูลหมอ + นัดของหมอ + จองนัดให้คนไข้
 class AdminHomePage extends StatelessWidget {
   final Doctor doctor;
   const AdminHomePage({super.key, required this.doctor});
- 
+
   Future<void> _cancel(BuildContext context, Booking b) async {
     final ok = await showDialog<bool>(
       context: context,
@@ -32,7 +31,7 @@ class AdminHomePage extends StatelessWidget {
     );
     if (ok == true) bookingService.cancel(b);
   }
- 
+
   Widget _stat(BuildContext context, String label, int value) => Expanded(
         child: Card(
           child: Padding(
@@ -48,7 +47,7 @@ class AdminHomePage extends StatelessWidget {
           ),
         ),
       );
- 
+
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
@@ -56,7 +55,7 @@ class AdminHomePage extends StatelessWidget {
       builder: (_, __) {
         final list = bookingService.forDoctor(doctor.id);
         final today = list.where((b) => isToday(b.start)).length;
- 
+
         return Scaffold(
           appBar: AppBar(
             title: const Text('ระบบหมอ'),
@@ -85,7 +84,7 @@ class AdminHomePage extends StatelessWidget {
             label: const Text('จองนัดให้คนไข้'),
           ),
           body: ListView(padding: const EdgeInsets.only(bottom: 88), children: [
-            // ---- ข้อมูลหมอ ----
+            // ข้อมูลหมอ
             Card(
               margin: const EdgeInsets.fromLTRB(12, 12, 12, 0),
               child: ListTile(

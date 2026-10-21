@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
- 
 import '../auth/auth_service.dart';
 import '../model/format.dart';
 import '../model/models.dart';
 import 'booking_service.dart';
- 
-/// นัดหมายของคนไข้ (หมอเป็นคนจองให้ ฝั่งนี้ดูอย่างเดียว)
+
+// นัดหมายของคนไข้ หมอเป็นคนจองให้ ฝั่งนี้ดูอย่างเดียว
 class MyBookingsPage extends StatelessWidget {
   const MyBookingsPage({super.key});
- 
+
   Widget _card(BuildContext context, Booking b, {required bool past}) {
     final scheme = Theme.of(context).colorScheme;
     return Card(
@@ -45,7 +44,7 @@ class MyBookingsPage extends StatelessWidget {
       ),
     );
   }
- 
+
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
@@ -55,7 +54,7 @@ class MyBookingsPage extends StatelessWidget {
         final now = DateTime.now();
         final upcoming = [for (final b in all) if (b.end.isAfter(now)) b];
         final past = [for (final b in all) if (!b.end.isAfter(now)) b].reversed;
- 
+
         return Scaffold(
           appBar: AppBar(title: const Text('นัดหมายของฉัน')),
           body: all.isEmpty

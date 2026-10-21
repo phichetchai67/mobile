@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
- 
 import 'auth_service.dart';
 import 'register_page.dart';
- 
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
- 
+
 class _LoginPageState extends State<LoginPage> {
-  final _idCard = TextEditingController(); // เลขบัตรประชาชน (คนไข้)
+  final _idCard = TextEditingController(); // เลขบัตรประชาชนคนไข้
   final _doctorId = TextEditingController(); // ไอดีหมอ
   final _pass = TextEditingController();
   bool _isAdmin = false; // false = ผู้ใช้, true = หมอ/ผู้ดูแล
   bool _loading = false;
   String? _error;
- 
+
   Future<void> _submit() async {
     setState(() {
       _loading = true;
@@ -32,7 +31,7 @@ class _LoginPageState extends State<LoginPage> {
       _error = err;
     });
   }
- 
+
   Future<void> _openRegister() async {
     final id = await Navigator.push<String>(
         context, MaterialPageRoute(builder: (_) => const RegisterPage()));
@@ -46,13 +45,13 @@ class _LoginPageState extends State<LoginPage> {
           content: Text('สมัครสมาชิกสำเร็จ กรุณาเข้าสู่ระบบ')));
     }
   }
- 
+
   void _switchRole(bool admin) => setState(() {
         _isAdmin = admin;
         _error = null;
         _pass.clear();
       });
- 
+
   @override
   void dispose() {
     _idCard.dispose();
@@ -60,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
     _pass.dispose();
     super.dispose();
   }
- 
+
   @override
   Widget build(BuildContext context) {
     final title = _isAdmin ? 'เข้าสู่ระบบสำหรับหมอ' : 'เข้าสู่ระบบ';

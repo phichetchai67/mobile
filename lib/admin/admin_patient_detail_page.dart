@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
- 
 import '../auth/auth_service.dart';
 import '../booking/booking_service.dart';
 import '../model/format.dart';
 import '../model/models.dart';
- 
-/// ข้อมูลคนไข้ฝั่งหมอ: เลขบัตร ชื่อ นามสกุล อายุ เบอร์โทร ชื่อโรค
-/// และประวัตินัดย้อนหลังทั้งหมดของคนไข้คนนี้ (หมอแก้ชื่อโรคได้)
+
+// ข้อมูลคนไข้ฝั่งหมอ เลขบัตร ชื่อ นามสกุล อายุ เบอร์โทร ชื่อโรค
+// และประวัตินัดย้อนหลังทั้งหมดของคนไข้คนนี้ หมอแก้ชื่อโรคได้
 class AdminPatientDetailPage extends StatelessWidget {
   final String idCard;
   const AdminPatientDetailPage({super.key, required this.idCard});
- 
+
   Future<void> _editDisease(BuildContext context, String current) async {
     final result = await showDialog<String>(
       context: context,
@@ -18,7 +17,7 @@ class AdminPatientDetailPage extends StatelessWidget {
     );
     if (result != null) await authService.updateDisease(idCard, result);
   }
- 
+
   Widget _row(String label, String value, {Widget? trailing}) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 6),
         child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -29,12 +28,12 @@ class AdminPatientDetailPage extends StatelessWidget {
           if (trailing != null) trailing,
         ]),
       );
- 
+
   Widget _title(String text) => Padding(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
         child: Text(text, style: const TextStyle(fontWeight: FontWeight.bold)),
       );
- 
+
   Widget _bookingCard(BuildContext context, Booking b, {required bool past}) {
     final scheme = Theme.of(context).colorScheme;
     return Card(
@@ -52,7 +51,7 @@ class AdminPatientDetailPage extends StatelessWidget {
       ),
     );
   }
- 
+
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
@@ -71,12 +70,12 @@ class AdminPatientDetailPage extends StatelessWidget {
           for (final b in all)
             if (b.end.isAfter(now)) b
         ];
-        // ย้อนหลัง: เรียงจากล่าสุดไปเก่าสุด
+        // ย้อนหลัง เรียงจากล่าสุดไปเก่าสุด
         final past = [
           for (final b in all)
             if (!b.end.isAfter(now)) b
         ].reversed.toList();
- 
+
         return Scaffold(
           appBar: AppBar(title: Text('${a.firstName} ${a.lastName}')),
           body: ListView(padding: const EdgeInsets.only(bottom: 24), children: [
@@ -121,24 +120,24 @@ class AdminPatientDetailPage extends StatelessWidget {
     );
   }
 }
- 
+
 class _DiseaseDialog extends StatefulWidget {
   final String initial;
   const _DiseaseDialog({required this.initial});
   @override
   State<_DiseaseDialog> createState() => _DiseaseDialogState();
 }
- 
+
 class _DiseaseDialogState extends State<_DiseaseDialog> {
   late final TextEditingController _c =
       TextEditingController(text: widget.initial);
- 
+
   @override
   void dispose() {
     _c.dispose();
     super.dispose();
   }
- 
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
